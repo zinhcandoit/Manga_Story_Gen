@@ -1,0 +1,46 @@
+# --- Model Config ---
+model_name: "unsloth/Qwen3-VL-4B-Thinking-unsloth-bnb-4bit"
+max_seq_length: 32768
+load_in_4bit: true
+lora_r: 16
+lora_alpha: 16
+bias: "none"
+lora_dropout: 0
+seed: 3407
+
+# --- Training Arguments ---
+output_dir: "outputs_grpo"
+learning_rate: 5e-6
+lr_scheduler_type: "cosine"
+logging_steps: 1
+adam_beta1: 0.9
+adam_beta2: 0.99
+weight_decay: 0.1
+warmup_ratio: 0.1
+max_steps: -1
+num_train_epochs: 1
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+gradient_checkpointing: true
+optim: "paged_adamw_8bit"
+report_to: "none"
+remove_unused_columns: false
+
+# --- Checkpoint & Hub ---
+save_strategy: "steps"
+save_steps: 300
+save_total_limit: 2
+push_to_hub: true
+hub_model_id: "zinhcandoit/Manga_Story_Gen"
+hub_strategy: "every_save"
+hub_private_repo: true
+
+# --- GRPO Specific ---
+num_generations: 4
+generation_batch_size: 4
+max_grad_norm: 0.1
+max_completion_length: 1536
+max_prompt_length: 32768
+importance_sampling_level: "sequence"
+mask_truncated_completions: false
+loss_type: "dr_grpo"

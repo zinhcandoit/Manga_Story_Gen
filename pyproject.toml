@@ -1,0 +1,36 @@
+[project]
+name = "manga-story-gen"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "unsloth[colab-new]",
+    "torch==2.10.0",
+    "torchvision",
+    "torchaudio",
+    "transformers==4.57.1",
+    "trl==0.24.0",
+    "xformers",
+    "accelerate",
+    "peft",
+    "bitsandbytes",
+    "pillow",
+    "python-dotenv",
+    "datasets",
+    "sentence-transformers",
+    "google-genai",
+    "ipywidgets",
+    "matplotlib",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+torchaudio = { index = "pytorch-cu128" }
+unsloth = { git = "https://github.com/unslothai/unsloth.git" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
