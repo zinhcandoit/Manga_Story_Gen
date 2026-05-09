@@ -31,9 +31,9 @@ save_strategy: "steps"
 save_steps: 300
 save_total_limit: 2
 push_to_hub: true
-hub_model_id: "zinhcandoit/Manga_Story_Gen"
+hub_model_id: "TQZinh/Manga_Story_Gen_GRPO"
 hub_strategy: "every_save"
-hub_private_repo: true
+hub_private_repo: False
 
 # --- GRPO Specific ---
 num_generations: 4

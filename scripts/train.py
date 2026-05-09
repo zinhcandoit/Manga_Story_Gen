@@ -19,7 +19,7 @@ from trl import GRPOConfig, GRPOTrainer
 from unsloth import FastVisionModel, is_bfloat16_supported
 import yaml
 import argparse
-from preprocessing import (
+from scripts.preprocessing import (
     load_genre_data, 
     prepare_manga_data, 
     get_gaussian_sampled_dataset,
@@ -137,54 +137,55 @@ def main():
         
         return rewards
 
-model, tokenizer = FastVisionModel.from_pretrained(
-    model_name     = config["model_name"],
-    max_seq_length = config["max_seq_length"],
-    load_in_4bit   = config["load_in_4bit"],
-    fast_inference = False,
-)
-# 3. Cấu hình LoRA (PEFT)
-model = FastVisionModel.get_peft_model(
-    model,
-    finetune_vision_layers     = False, 
-    finetune_language_layers   = True,  
-    finetune_attention_modules = True,  
-    finetune_mlp_modules       = True,  
-    r                          = config["lora_r"],           
-    lora_alpha                 = config["lora_alpha"],  
-    lora_dropout               = config["lora_dropout"],
-    bias                       = config["bias"],
-    random_state               = config.get("seed", 3407),
-    use_gradient_checkpointing = "unsloth"
-)
+    model, tokenizer = FastVisionModel.from_pretrained(
+        model_name     = config["model_name"],
+        max_seq_length = config["max_seq_length"],
+        load_in_4bit   = config["load_in_4bit"],
+        fast_inference = False,
+    )
+    # 3. Cấu hình LoRA (PEFT)
+    model = FastVisionModel.get_peft_model(
+        model,
+        finetune_vision_layers     = False, 
+        finetune_language_layers   = True,  
+        finetune_attention_modules = True,  
+        finetune_mlp_modules       = True,  
+        r                          = config["lora_r"],           
+        lora_alpha                 = config["lora_alpha"],  
+        lora_dropout               = config["lora_dropout"],
+        bias                       = config["bias"],
+        random_state               = config.get("seed", 3407),
+        use_gradient_checkpointing = "unsloth"
+    )
 
-# Switch model back to training mode
-FastVisionModel.for_training(model)
-model_specific_keys = ["model_name", "max_seq_length", "load_in_4bit", "lora_r", "lora_alpha", "lora_dropout", "bias", "seed"]
-grpo_kwargs = {k: v for k, v in config.items() if k not in model_specific_keys}
+    # Switch model back to training mode
+    FastVisionModel.for_training(model)
+    model_specific_keys = ["model_name", "max_seq_length", "load_in_4bit", "lora_r", "lora_alpha", "lora_dropout", "bias", "seed"]
+    grpo_kwargs = {k: v for k, v in config.items() if k not in model_specific_keys}
 
 
-training_args = GRPOConfig(
-    **grpo_kwargs,
-    bf16 = is_bfloat16_supported(),
-    fp16 = not is_bfloat16_supported(),
-)
+    training_args = GRPOConfig(
+        **grpo_kwargs,
+        bf16 = is_bfloat16_supported(),
+        fp16 = not is_bfloat16_supported(),
+    )
 
-trainer = GRPOTrainer(
-    model=model,
-    processing_class=tokenizer,
-    reward_funcs=[
-        format_reward_func,
-        cosine_similarity_reward   # Hàm reward bạn đã định nghĩa
-        # Bạn có thể thêm các hàm reward định dạng ở đây nếu cần
-    ],
-    args=training_args,
-    train_dataset=dataset,
-)
+    trainer = GRPOTrainer(
+        model=model,
+        processing_class=tokenizer,
+        reward_funcs=[
+            format_reward_func,
+            cosine_similarity_reward   # Hàm reward bạn đã định nghĩa
+            # Bạn có thể thêm các hàm reward định dạng ở đây nếu cần
+        ],
+        args=training_args,
+        train_dataset=dataset,
+    )
 
-torch.cuda.empty_cache()
-gc.collect()
-trainer.train()
+    torch.cuda.empty_cache()
+    gc.collect()
+    trainer.train()
+    trainer.push_to_hub(config["hub_model_id"])
 
 if __name__ == "__main__":
     main()
