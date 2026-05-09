@@ -10,7 +10,7 @@ seed: 3407
 
 # --- Training Arguments ---
 output_dir: "outputs_grpo"
-learning_rate: 5e-6
+learning_rate: 5.0e-6
 lr_scheduler_type: "cosine"
 logging_steps: 1
 adam_beta1: 0.9
