@@ -26,3 +26,5 @@ uv run python -m scripts.train
 # Or
 sh train.sh
 ```
+## Note
+I got an error. Maybe it could fix: [model_kwargs error](https://discuss.huggingface.co/t/getting-the-error-valueerror-the-following-model-kwargs-are-not-used-by-the-model/71885)
