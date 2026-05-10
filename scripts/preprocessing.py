@@ -138,6 +138,7 @@ You NEVER output anything outside these tag pairs. You NEVER skip or omit <story
     user_instruction = """Let's think step by step. Analyze the provided manga panels step-by-step inside <think> tags.
 Then write a compelling novel chapter inside <story> tags based on the visuals.
 REMINDER: You MUST wrap your story in <story>...</story>."""
+    
     for fname in sampled_files:
         json_path = os.path.join(FINAL_TRAIN_DIR, fname)
         with open(json_path, 'r', encoding='utf-8') as f:
@@ -155,20 +156,29 @@ REMINDER: You MUST wrap your story in <story>...</story>."""
         with open(cot_path, 'r', encoding='utf-8') as f:
             cot_content = f.read().strip()
         if not cot_content: continue
+        
         # Load Story
         story_path = os.path.join(STORY_DIR, cluster, fname.replace('.json', '_story.json'))
         if not os.path.exists(story_path): continue
         with open(story_path, 'r', encoding='utf-8') as f:
             story_content = json.load(f).get("story", "")
         if not story_content.strip(): continue
-        # Xây dựng cấu trúc prompt Multi-role
+        
+        # ==========================================
+        # ĐOẠN ĐÃ SỬA: Xây dựng cấu trúc prompt Multi-role
+        # ==========================================
         prompt = [
             {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
-            {"role": "user", "content": [{"type": "text", "text": user_instruction}]}
+            {"role": "user", "content": []} # Khởi tạo content rỗng cho user
         ]
-        # Thêm các node image vào content của tin nhắn User
+        
+        # Bước 1: Thêm TẤT CẢ các node image vào TRƯỚC
         for _ in image_paths:
             prompt[1]["content"].append({"type": "image"})
+            
+        # Bước 2: Chốt lại bằng câu lệnh Text ở CUỐI CÙNG
+        prompt[1]["content"].append({"type": "text", "text": user_instruction})
+        # ==========================================
                 
         full_answer = f"<think>\n{cot_content}\n</think>\n<story>\n{story_content.strip()}\n</story>"
         
@@ -183,7 +193,7 @@ REMINDER: You MUST wrap your story in <story>...</story>."""
         })
         
     return data_list
-
+    
 def get_gaussian_sampled_dataset(data_list, target_size=-1, max_pages = -1):
     """
     Hàm thực hiện lọc và lấy mẫu dữ liệu theo phân phối chuẩn (Gaussian).

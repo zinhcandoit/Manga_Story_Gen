@@ -1,27 +1,27 @@
 [project]
 name = "manga-story-gen"
 version = "0.1.0"
-description = "Add your description here"
+description = "Manga GRPO Training Environment"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = "==3.12.13"
 dependencies = [
     "unsloth[colab-new]",
     "torch==2.10.0",
-    "torchvision",
-    "torchaudio",
-    "transformers==4.57.1",
+    "torchvision==0.25.0",
+    "torchaudio==2.11.0",
+    "transformers",
     "trl==0.24.0",
+    "peft==0.19.1",
+    "accelerate==1.13.0",
+    "bitsandbytes==0.49.2",
+    "datasets==4.3.0",
     "xformers",
-    "accelerate",
-    "peft",
-    "bitsandbytes",
-    "pillow",
+    "pillow==12.1.1",
     "python-dotenv",
-    "datasets",
-    "sentence-transformers",
+    "sentence-transformers==5.4.1",
     "google-genai",
     "ipywidgets",
-    "matplotlib",
+    "matplotlib==3.10.9",
 ]
 
 [tool.uv.sources]

@@ -21,7 +21,7 @@ import yaml
 import argparse
 from scripts.preprocessing import (
     load_genre_data, 
-    prepare_manga_data, 
+    prepare_manga_data,
     get_gaussian_sampled_dataset,
     FINAL_TRAIN_DIR
 )
@@ -45,7 +45,7 @@ def main():
 
     def transform_fn(examples):
         images = []
-        MAX_PIXELS = 240 * 340 # Giới hạn tổng số pixel (tương đương ảnh 512x512)
+        MAX_PIXELS = 360 * 480  # Giới hạn tổng số pixel (tương đương ảnh 512x512)
         
         for paths in examples["image_paths"]:
             batch_images = []
@@ -78,11 +78,12 @@ def main():
             return matches[-1].strip()
         return "" 
     def format_reward_func(completions, **kwargs):
-        """Thưởng cho việc tuân thủ định dạng <think> và <story>"""
+        """Thưởng cho việc tuân thủ định dạng và PHẠT NẶNG nếu bị cắt cụt"""
         rewards = []
         for completion in completions:
             text = completion[0]['content'] if isinstance(completion, list) else str(completion)
             reward = 0.0
+            
             # Thưởng nếu có đủ cặp thẻ
             if "<think>" in text and "</think>" in text:
                 reward += 0.2
@@ -92,6 +93,14 @@ def main():
             if "</think>" in text and "<story>" in text:
                 if text.find("</think>") < text.find("<story>"):
                     reward += 0.2
+                    
+            # --- PHẦN HÌNH PHẠT MỚI (CHỐNG LỖI LOSS = 0) ---
+            if "</story>" not in text:
+                reward -= 1.0  # Phạt nặng nhất: Chưa viết xong đã hết token
+            elif not text.strip().endswith("</story>"):
+                reward -= 0.5  # Phạt nhẹ: Đã đóng thẻ nhưng còn lảm nhảm thêm rác ở sau
+            # -----------------------------------------------
+            
             rewards.append(reward)
         return rewards
         
@@ -142,7 +151,11 @@ def main():
         max_seq_length = config["max_seq_length"],
         load_in_4bit   = config["load_in_4bit"],
         fast_inference = False,
+        attn_implementation="flash_attention_2",
+        torch_dtype="bfloat16",
+        trust_remote_code=True
     )
+    
     # 3. Cấu hình LoRA (PEFT)
     model = FastVisionModel.get_peft_model(
         model,

@@ -22,7 +22,7 @@ a) Tuning parameters in `configs/train.yaml`
 
 b) Run in terminal:
 ```bash
-uv run python -m scripts.train
+uv run python -m scripts.train --target_size 3500 --max_pages 15
 # Or
 sh train.sh
 ```
