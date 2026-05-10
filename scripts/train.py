@@ -151,8 +151,6 @@ def main():
         max_seq_length = config["max_seq_length"],
         load_in_4bit   = config["load_in_4bit"],
         fast_inference = False,
-        attn_implementation="flash_attention_2",
-        torch_dtype="bfloat16",
         trust_remote_code=True
     )
     
