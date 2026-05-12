@@ -45,7 +45,7 @@ def main():
 
     def transform_fn(examples):
         images = []
-        MAX_PIXELS = 360 * 480  # Giới hạn tổng số pixel (tương đương ảnh 512x512)
+        MAX_PIXELS = 235200 # 28 * (1 + 1.4) * 3500
         
         for paths in examples["image_paths"]:
             batch_images = []
@@ -150,8 +150,7 @@ def main():
         model_name     = config["model_name"],
         max_seq_length = config["max_seq_length"],
         load_in_4bit   = config["load_in_4bit"],
-        fast_inference = False,
-        trust_remote_code=True
+        fast_inference = False
     )
     
     # 3. Cấu hình LoRA (PEFT)
