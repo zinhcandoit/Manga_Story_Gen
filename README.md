@@ -27,4 +27,5 @@ uv run python -m scripts.train --target_size 3500 --max_pages 15
 sh train.sh
 ```
 ## Note
-I got an error. Maybe it could fix: [model_kwargs error](https://discuss.huggingface.co/t/getting-the-error-valueerror-the-following-model-kwargs-are-not-used-by-the-model/71885)
+- This is dataset link: https://huggingface.co/datasets/TQZinh/Manga_StoryGen
+- Trained model: https://huggingface.co/TQZinh/Manga_Story_Gen_SFT
