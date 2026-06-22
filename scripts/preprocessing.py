@@ -11,7 +11,7 @@ random.seed(42)
 # 1. Cấu hình thông tin
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCAL_DIR = os.path.join(ROOT_DIR, "data")
-REPO_ID = "TQZinh/Manga_Story_Gen"
+REPO_ID = "TQZinh/Manga_StoryGen"
 MANGA_DIR = os.path.join(LOCAL_DIR, 'manga_dataset/image')
 FINAL_TRAIN_DIR = os.path.join(LOCAL_DIR, 'manga_dataset/final/train')
 COT_DIR = os.path.join(LOCAL_DIR, 'manga_dataset/synthetic_cot')
